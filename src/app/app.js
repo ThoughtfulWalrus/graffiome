@@ -6,7 +6,7 @@ angular.module('graffio', [
   'ui.router'
 ])
 .config(function($stateProvider, $urlRouterProvider) {
-  var rootRef = new Firebase('https://dazzling-heat-2465.firebaseio.com/web/uauth');
+  var rootRef = new Firebase(FIREBASE_CONNECTION + '/web/uauth');
   var user = rootRef.getAuth();
   if (!user) {
     $urlRouterProvider.otherwise('/login');
