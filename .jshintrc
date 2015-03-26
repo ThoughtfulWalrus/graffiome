@@ -18,9 +18,13 @@
     "trailing": true,
     "smarttabs": true,
     "white": true,
-    "globals": {
-        "window": true,
-        "chrome": true,
-        "$": true
+    "globals" : {
+      "chrome": true,
+      "crypto": true,
+      "window": true,
+      "cryptoJS": true,
+      "document": true,
+      "angular": true,
+      "$": true
     }
 }
