@@ -28,8 +28,10 @@ var saveUserCanvas = function(site, data) {
 };
 
 var saveHighlights = function(site, data) {
+  console.log('saveHighlights to db from backgroud');
   if (getCurrentUser()){
-    ref.child(site).child(getCurrentUser()).child('highlight').set(data);
+    console.log('firebase: ', ref);
+    ref.child(site).child(getCurrentUser()).child('highlights').set(data);
     return true;
   } else {
     return false;
@@ -102,6 +104,7 @@ chrome.runtime.onMessage.addListener(function(request,sender,sendResponse) {
   } else if (request.action === 'stopSiteData') {
     unregisterSite(request.site);
   } else if (request.action === 'saveUserHighlights'){
-    saveHighlights(request.site, request.data);
+    console.log('from backgroundlistener');
+    sendResponse({saveStatus: saveHighlights(request.site, request.data)});
   }
 });

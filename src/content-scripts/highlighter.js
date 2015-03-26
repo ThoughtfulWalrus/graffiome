@@ -1,6 +1,6 @@
 'use strict';
 
-var tabUrl = window.location.href.toString();
+var tabUrl = CryptoJS.SHA1(window.location.href).toString();
 var selection = window.getSelection();
 var ranges;
 
@@ -21,17 +21,18 @@ Highlighter.addClassApplier(Pink);
 Highlighter.addClassApplier(Aqua);
 Highlighter.addClassApplier(Yellow);
 
-// var reloadHighlights = function(){
-//   chrome.storage.local.get( function (storage) {
-//     if (storage[tabUrl]){
-//       ranges = storage[tabUrl];
-//       Highlighter.deserialize(ranges);
-//     }
-//   });
-// };
+var reloadHighlights = function(){
+  chrome.storage.local.get( function (storage) {
+    if (storage[tabUrl]){
+      ranges = storage[tabUrl];
+      Highlighter.deserialize(ranges);
+    }
+  });
+};
 
 
 var saveUserHighlights = function(ranges){
+  console.log('from saveUserHighlights: ', ranges);
   chrome.runtime.sendMessage(
     {action: 'saveUserHighlights', site: tabUrl, data: ranges},
     function(response) {
@@ -59,9 +60,10 @@ var saveUserHighlights = function(ranges){
 // );
 
 $(function() {
-  // reloadHighlights();
+  reloadHighlights();
   $('body').mouseup( function() {
-    if ( selection.type === "Range" ){
+    if ( selection.type === 'Range' ){
+      console.log(Highlighter);
       Highlighter.highlightSelection(Color);
       ranges = Highlighter.serialize();
       saveUserHighlights(ranges);
