@@ -31,9 +31,9 @@ Highlighter.addClassApplier(Yellow);
 // };
 
 
-var saveHighlights = function(ranges){
+var saveUserHighlights = function(ranges){
   chrome.runtime.sendMessage(
-    {action: 'saveHighlights', site: tabUrl, data: ranges},
+    {action: 'saveUserHighlights', site: tabUrl, data: ranges},
     function(response) {
       if (response.saveStatus) {
         console.log('saving user highlights');
@@ -58,13 +58,13 @@ var saveHighlights = function(ranges){
 //   }
 // );
 
-// $(function() {
-//   reloadHighlights();
-//   $('body').mouseup( function() {
-//     if ( selection.type === "Range" ){
-//       Highlighter.highlightSelection(Color);
-//       ranges = Highlighter.serialize();
-//       saveHighlights(ranges);
-//     }
-//   });
-// });
+$(function() {
+  // reloadHighlights();
+  $('body').mouseup( function() {
+    if ( selection.type === "Range" ){
+      Highlighter.highlightSelection(Color);
+      ranges = Highlighter.serialize();
+      saveUserHighlights(ranges);
+    }
+  });
+});

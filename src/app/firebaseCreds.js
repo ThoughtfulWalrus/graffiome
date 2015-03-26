@@ -1,1 +1,2 @@
-var FIREBASE_CONNECTION = 'ENTER FIREBASE CONNECTION HERE';
+// var FIREBASE_CONNECTION = 'https://intense-inferno-8021.firebaseio.com';
+var FIREBASE_CONNECTION = 'https://graffio22.firebaseio.com';

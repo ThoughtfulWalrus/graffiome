@@ -1,4 +1,5 @@
 'use strict';
+
 var userToken = null;
 var ref = new Firebase(FIREBASE_CONNECTION + '/web/data/sites/');
 var registeredSites = {}; //firebase event listener
@@ -20,6 +21,15 @@ var getCurrentUser = function() {
 var saveUserCanvas = function(site, data) {
   if (getCurrentUser()){
     ref.child(site).child(getCurrentUser()).child('canvas').set(data);
+    return true;
+  } else {
+    return false;
+  }
+};
+
+var saveHighlights = function(site, data) {
+  if (getCurrentUser()){
+    ref.child(site).child(getCurrentUser()).child('highlight').set(data);
     return true;
   } else {
     return false;
@@ -91,5 +101,7 @@ chrome.runtime.onMessage.addListener(function(request,sender,sendResponse) {
     registerSite(request.site);
   } else if (request.action === 'stopSiteData') {
     unregisterSite(request.site);
+  } else if (request.action === 'saveUserHighlights'){
+    saveHighlights(request.site, request.data);
   }
 });
