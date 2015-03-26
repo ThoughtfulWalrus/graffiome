@@ -1,7 +1,7 @@
 'use strict';
 angular.module('graffio.loginController', [])
 .controller('loginController', function($scope, $state) {
-  var ref = new Firebase('https://dazzling-heat-2465.firebaseio.com');
+  var ref = new Firebase(FIREBASE_CONNECTION);
   
   $scope.logIn = function() {
     console.log('login called!');

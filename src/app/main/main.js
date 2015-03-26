@@ -35,7 +35,7 @@ var sendTabMessage = function(status, tabID) {
 // Begin Angular Module
 angular.module('graffio.mainController', ['firebase'])
 .controller('mainController', function($scope, $state) {
-  var ref = new Firebase('https://intense-inferno-8021.firebaseio.com');
+  var ref = new Firebase(FIREBASE_CONNECTION);
 
   $scope.logout = function() {
     ref.unauth();
@@ -116,7 +116,7 @@ angular.module('graffio.mainController', ['firebase'])
   };
 
 }).controller('groupController', function($scope, $firebaseArray){
-  var ref = new Firebase('https://intense-inferno-8021.firebaseio.com/users');
+  var ref = new Firebase(FIREBASE_CONNECTION + '/users');
   var user = ref.getAuth().uid.replace(':','');
 
   $scope.groups = $firebaseArray(ref.child(user).child('groups'));
