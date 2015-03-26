@@ -1,3 +1,4 @@
+[![Stories in Ready](https://badge.waffle.io/ThoughtfulWalrus/graffiome.png?label=ready&title=Ready)](https://waffle.io/ThoughtfulWalrus/graffiome)
 # Graffio.me
 
 A lighthearted chrome extensions to personalize the web.
