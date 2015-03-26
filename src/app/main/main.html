@@ -3,7 +3,18 @@
   <h2>Controls</h2>
 
   <button ng-click="toggleStatus()" ng-controller="onOffController">Turn Editing {{ onOffButtonTxt }}</button>
-  <br>
+  <div ng-controller="groupController">
+    <div ng-repeat="group in groups">
+      <div class="contact-card-name">
+        {{group.name}}
+        <input type="submit" value='Remove' class="group" ng-click="removeGroup()"></input>
+      </div>
+    </div>
+    <form>
+      <input type='text' ng-model='newGroup' placeholder='Enter a group name'></input>
+      <input type="submit" value='Add Group' class="group" ng-click="addGroup()"></input>
+    </form>
+  </div>
   <button class="black" ng-click="changeColor($event)" ng-controller="paletteController">Black</button>
   <button class="blue" ng-click="changeColor($event)" ng-controller="paletteController">Blue</button>
   <button class="red" ng-click="changeColor($event)" ng-controller="paletteController">Red</button>
