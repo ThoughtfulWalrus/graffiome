@@ -35,6 +35,7 @@ var sendTabMessage = function(status, tabID) {
 // Begin Angular Module
 angular.module('graffio.mainController', ['firebase'])
 .controller('mainController', function($scope, $state) {
+
   var ref = new Firebase(FIREBASE_CONNECTION);
 
   $scope.logout = function() {

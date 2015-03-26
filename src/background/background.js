@@ -1,6 +1,8 @@
 'use strict';
 var userToken = null;
+
 var ref = new Firebase(FIREBASE_CONNECTION + '/web/data/sites/');
+
 var registeredSites = {}; //firebase event listener
 
 // inform all tabs that the token as changed

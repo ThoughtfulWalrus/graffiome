@@ -1,6 +1,7 @@
 'use strict';
 angular.module('graffio.signupController', [])
 .controller('signupController', function($scope, $state) {
+
   var ref = new Firebase(FIREBASE_CONNECTION);
 
   $scope.signUp = function() {
