@@ -30,10 +30,10 @@ var registerSite = function(site) {
   console.log('registering site', site);
   if (!registeredSites[site]){
     registeredSites[site] = {count: 0, listener: null};
-  } 
+  }
   if (registeredSites[site].count <= 0) {
     registeredSites[site].count = 1;
-    registeredSites[site].listener = ref.child(site).on('value', 
+    registeredSites[site].listener = ref.child(site).on('value',
       function (snapshot) {
         var FBData = snapshot.val();
         for (var user in FBData) {
@@ -64,8 +64,8 @@ var unregisterSite = function(site) {
 
 var loginUser = function(token) {
   ref.authWithCustomToken(token, function(error) {
-    if (error) { 
-      console.log('Login Failed!', error); 
+    if (error) {
+      console.log('Login Failed!', error);
     }
   });
 };
@@ -81,14 +81,16 @@ chrome.runtime.onMessage.addListener(function(request,sender,sendResponse) {
   } else if (request.action === 'clearToken') { // Deauthenticate the user
     logoutUser();
   } else if (request.action === 'getToken') { // if it's requesting the token, return it
-    sendResponse({token: userToken});  
+    sendResponse({token: userToken});
   } else if (request.action === 'getUser') { // if it's requesting the token, return it
-    sendResponse({user: getCurrentUser()});  
+    sendResponse({user: getCurrentUser()});
   } else if (request.action === 'saveCanvas') {
     sendResponse({saveStatus: saveUserCanvas(request.site, request.data)});
   } else if (request.action === 'startSiteData') {
     registerSite(request.site);
   } else if (request.action === 'stopSiteData') {
     unregisterSite(request.site);
+  } else if (request.action === 'addGroup') {
+    // bensFunction(request.groupName)
   }
 });
