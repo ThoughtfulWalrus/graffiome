@@ -90,7 +90,5 @@ chrome.runtime.onMessage.addListener(function(request,sender,sendResponse) {
     registerSite(request.site);
   } else if (request.action === 'stopSiteData') {
     unregisterSite(request.site);
-  } else if (request.action === 'addGroup') {
-    // bensFunction(request.groupName)
   }
 });

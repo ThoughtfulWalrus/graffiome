@@ -22,7 +22,7 @@ var getCurrentUser = function(callback){
 var saveUserCanvas = function(){
   var data = canvas.toDataURL();
   chrome.runtime.sendMessage(
-    {action: 'saveCanvas', site: tabUrl, data: data}, 
+    {action: 'saveCanvas', site: tabUrl, data: data},
     function(response) {
       if (response.saveStatus) {
         console.log('saving user canvas');
@@ -42,7 +42,7 @@ var drawLine = function(){
   ctx.closePath();
 };
 
-var findxy = function(res, e){ 
+var findxy = function(res, e){
   if (res === 'down') {
     flag = true;
     prevX = currX;
@@ -73,7 +73,7 @@ var turnEditOn = function($canvas){
     .on('mousemove', function(e){findxy('move', e);})
     .on('mousedown', function(e){findxy('down', e);})
     .on('mouseup', function(e){
-      findxy('up', e); 
+      findxy('up', e);
       saveUserCanvas();
     })
     .on('mouseout', function(e){ findxy('out', e);})
@@ -81,7 +81,7 @@ var turnEditOn = function($canvas){
   getCurrentUser(function(user){
     canvas = document.getElementsByClassName(user)[0];
     ctx = canvas.getContext('2d');
-  }); 
+  });
 };
 
 var turnEditOff = function($canvas){
@@ -116,7 +116,7 @@ var toggleUserCanvasOn = function(){
         turnEditOn(userCanvas);
       } else {
         turnEditOn(userCanvas);
-      }  
+      }
       toggle = 'on';
     });
   }
@@ -146,7 +146,7 @@ var onCanvasData = function(site, user, data) {
     if (!document.getElementsByClassName(user)[0]) {
       appendCanvasElement(user);
     }
-    var context = document.getElementsByClassName(user)[0].getContext('2d');  
+    var context = document.getElementsByClassName(user)[0].getContext('2d');
     drawCanvasElement(context, data);
   }
 };
@@ -179,9 +179,9 @@ chrome.runtime.onMessage.addListener(
         toggleUserCanvasOff();
         sendResponse({confirm:'canvas turned off'});
     } else if ( request.toggle === 'on' ){
-        toggleUserCanvasOn(); 
+        toggleUserCanvasOn();
         sendResponse({confirm:'canvas turned on'});
-        
+
     // Initialize toggle status for popup button
     } else if ( request.getStatus === true ){
       sendResponse({status:toggle});
