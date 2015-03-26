@@ -19,7 +19,7 @@ var getCurrentUser = function() {
 
 var saveUserCanvas = function(site, data) {
   if (getCurrentUser()){
-    ref.child(site).child(getCurrentUser()).set(data);
+    ref.child(site).child(getCurrentUser()).child('canvas').set(data);
     return true;
   } else {
     return false;
@@ -37,6 +37,7 @@ var registerSite = function(site) {
       function (snapshot) {
         var FBData = snapshot.val();
         for (var user in FBData) {
+          console.log(FBData[user]);
           broadcastData(site, user, FBData[user]);
         }
       });
