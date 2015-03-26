@@ -1,5 +1,11 @@
 {
   "rules": {
+    "users": {
+      "$user": {
+        ".read": "auth != null",
+        ".write": "auth != null"
+      }
+     },
     "web": {
       "data": {
         "sites": {

@@ -33,9 +33,9 @@ var sendTabMessage = function(status, tabID) {
 };
 
 // Begin Angular Module
-angular.module('graffio.mainController', [])
+angular.module('graffio.mainController', ['firebase'])
 .controller('mainController', function($scope, $state) {
-  var ref = new Firebase('https://dazzling-heat-2465.firebaseio.com');
+  var ref = new Firebase('https://intense-inferno-8021.firebaseio.com');
 
   $scope.logout = function() {
     ref.unauth();
@@ -115,7 +115,26 @@ angular.module('graffio.mainController', [])
     });
   };
 
-});
+}).controller('groupController', function($scope, $firebaseArray){
+  var ref = new Firebase('https://intense-inferno-8021.firebaseio.com/users');
+  var user = ref.getAuth().uid.replace(':','');
+
+  $scope.groups = $firebaseArray(ref.child(user).child('groups'));
+  $scope.newGroup = '';
+
+  $scope.addGroup = function(){
+    console.log($scope.groups);
+    $scope.groups.$add({
+          name: $scope.newGroup
+        });
+  };
+
+  $scope.removeGroup = function() {
+    var indexToRemove = $scope.groups.indexOf(this.group)
+    $scope.groups.$remove(indexToRemove);
+  };
+
+});;
 
 
 //
