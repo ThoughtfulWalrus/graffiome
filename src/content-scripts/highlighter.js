@@ -1,3 +1,5 @@
+'use strict';
+
 var tabUrl = window.location.href.toString();
 var selection = window.getSelection();
 var ranges;
@@ -19,49 +21,50 @@ Highlighter.addClassApplier(Pink);
 Highlighter.addClassApplier(Aqua);
 Highlighter.addClassApplier(Yellow);
 
-var reloadHighlights = function(){
-  chrome.storage.local.get( function (storage) {
-    if (storage[tabUrl]){
-      ranges = storage[tabUrl];
-      Highlighter.deserialize(ranges);
-    }
-  });
-};
+// var reloadHighlights = function(){
+//   chrome.storage.local.get( function (storage) {
+//     if (storage[tabUrl]){
+//       ranges = storage[tabUrl];
+//       Highlighter.deserialize(ranges);
+//     }
+//   });
+// };
+
 
 var saveHighlights = function(ranges){
-
-  chrome.
-
-  chrome.storage.local.get( function (storage) {
-    storage[tabUrl] = ranges;
-    chrome.storage.local.set(storage, function(){
-      console.log('saved higlights');
-    });
+  chrome.runtime.sendMessage(
+    {action: 'saveHighlights', site: tabUrl, data: ranges},
+    function(response) {
+      if (response.saveStatus) {
+        console.log('saving user highlights');
+      } else {
+        console.log('failed to save highlights');
+    }
   });
 };
 
-// Message Listener
-chrome.runtime.onMessage.addListener(
-  function (request, sender, sendResponse) {
-   if (request.color) {
-    Color = request.color;
-   }
-   if (request.remove) {
-    console.log('remove')
-    Highlighter.removeAllHighlights();
-    ranges = Highlighter.serialize();
-    saveHighlights(ranges);
-   }
-  }
-);
+// // Message Listener
+// chrome.runtime.onMessage.addListener(
+//   function (request, sender, sendResponse) {
+//    if (request.color) {
+//     Color = request.color;
+//    }
+//    if (request.remove) {
+//     console.log('remove')
+//     Highlighter.removeAllHighlights();
+//     ranges = Highlighter.serialize();
+//     saveHighlights(ranges);
+//    }
+//   }
+// );
 
-$(function() {
-  reloadHighlights();
-  $('body').mouseup( function() {
-    if ( selection.type === "Range" ){
-      Highlighter.highlightSelection(Color);
-      ranges = Highlighter.serialize();
-      saveHighlights(ranges);
-    }
-  });
-});
+// $(function() {
+//   reloadHighlights();
+//   $('body').mouseup( function() {
+//     if ( selection.type === "Range" ){
+//       Highlighter.highlightSelection(Color);
+//       ranges = Highlighter.serialize();
+//       saveHighlights(ranges);
+//     }
+//   });
+// });
