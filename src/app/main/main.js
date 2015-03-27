@@ -42,7 +42,7 @@ angular.module('graffio.mainController', ['firebase', 'ngFx'])
     chrome.runtime.sendMessage({action: 'clearToken'});
     $state.go('login');
   };
-}).controller('onOffController', function($scope){ 
+}).controller('onOffController', function($scope){
   // initialize text before we can query the current tab
   $scope.onOffButtonTxt = 'loading...';
   $scope.highlightBtnTxt = 'loading...';
@@ -63,7 +63,7 @@ angular.module('graffio.mainController', ['firebase', 'ngFx'])
       }
     });
   };
-    
+
   // function called when button is pressed by user wishing to toggle the current state
   $scope.toggleStatus = function() {
 
@@ -74,7 +74,7 @@ angular.module('graffio.mainController', ['firebase', 'ngFx'])
       // and also change the UI here to indicate that the next click will turn the app off
       sendTabMessage(status, tabID);
       if (status === 'off') {
-        setStatusUi('on');  
+        setStatusUi('on');
       } else {
         setStatusUi('off');
       }
@@ -86,11 +86,11 @@ angular.module('graffio.mainController', ['firebase', 'ngFx'])
       var currentTabId = tabs[0].id;
       // Figure out what the current state of the highlighter is
       chrome.tabs.sendMessage(currentTabId, {getHighlighterStatus: true}, function(res) {
-        // I should get back highlighter from canvas here. 
+        // I should get back highlighter from canvas here.
         // It will have toggled
         $scope.$apply(function() {
           if (res.status === true) {
-            $scope.highlightBtnTxt = 'On';  
+            $scope.highlightBtnTxt = 'On';
           } else {
             $scope.highlightBtnTxt = 'Off';
           }
@@ -104,11 +104,11 @@ angular.module('graffio.mainController', ['firebase', 'ngFx'])
       var currentTabId = tabs[0].id;
       // Figure out what the current state of the highlighter is
       chrome.tabs.sendMessage(currentTabId, {toggleHighlighterStatus: true}, function(res) {
-        // I should get back highlighter from canvas here. 
+        // I should get back highlighter from canvas here.
         // It will have toggled
         $scope.$apply(function() {
           if (res.status === true) {
-            $scope.highlightBtnTxt = 'On';  
+            $scope.highlightBtnTxt = 'On';
           } else {
             $scope.highlightBtnTxt = 'Off';
           }
@@ -116,7 +116,7 @@ angular.module('graffio.mainController', ['firebase', 'ngFx'])
       });
     });
   };
- 
+
   console.log('initial get status called...');
   // Initial call to getStatus to figure out what status the page was in last.
   $scope.getHighlighterStatus();
