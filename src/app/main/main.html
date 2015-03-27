@@ -1,25 +1,35 @@
 <div class="container" id="mainPopup">
   <img src="../../static/graffiome_logo_64.png" alt="graffio.me icon"/>
-  <h2>Controls</h2>
-
-  <button ng-click="toggleStatus()" ng-controller="onOffController">Turn Editing {{ onOffButtonTxt }}</button>
+  <h2>Graffio.me</h2>
+  <div>
+    <button class="drawBtn" ng-click="toggleStatus()" ng-controller="onOffController" ng-class='{"active":onOffButtonTxt === "Off"}'>Turn Editing {{ onOffButtonTxt }}</button>
+    <button class="highlightBtn" ng-click="toggleHighlighter()" ng-controller="onOffController" ng-class='{"active":highlightBtnTxt === "On"}'>Highlighting {{ highlightBtnTxt }}</button>
+  </div>
   <div ng-controller="groupController">
-    <div ng-repeat="group in groups">
-      <div class="contact-card-name">
+    <div>Groups:</div>
+    <div ng-if='!groupsLoaded'>
+      <span style='color: gray;'>Loading groups...</span>
+    </div>
+    <div class='fx-fade-left' ng-repeat="group in groups">
+      <div class="groupName">
         {{group.name}}
-        <input type="submit" value='Remove' class="group" ng-click="removeGroup()"></input>
+      </div>
+      <div class="removeBtn">
+        <input type="submit" value='Remove' ng-click="removeGroup()"></input>
       </div>
     </div>
     <form>
-      <input type='text' ng-model='newGroup' placeholder='Enter a group name'></input>
+      <input type='text' ng-model='newGroup' placeholder='Enter a group name' maxlength="15"></input>
       <input type="submit" value='Add Group' class="group" ng-click="addGroup()"></input>
     </form>
   </div>
-  <button class="black" ng-click="changeColor($event)" ng-controller="paletteController">Black</button>
-  <button class="blue" ng-click="changeColor($event)" ng-controller="paletteController">Blue</button>
-  <button class="red" ng-click="changeColor($event)" ng-controller="paletteController">Red</button>
-  <button ng-click="nyan()" ng-controller="paletteController">Nyan</button>
-  <button ng-click="erase()" ng-controller="paletteController">Erase</button>
-  <br>
+  <div ng-controller="paletteController">
+    <button class="black" ng-click="changeColor($event)">Black</button>
+    <button class="blue" ng-click="changeColor($event)">Blue</button>
+    <button class="red" ng-click="changeColor($event)">Red</button>
+    <button ng-click="nyan()">Nyan</button>
+    <button ng-click="erase()">Erase</button>
+    <br>
+  </div>
   <button ng-click="logout()">Log Out!</button>
 </div>
