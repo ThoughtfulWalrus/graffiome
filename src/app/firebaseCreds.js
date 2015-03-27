@@ -1,1 +1,1 @@
-var FIREBASE_CONNECTION = 'ENTER FIREBASE CONNECTION HERE';
+var FIREBASE_CONNECTION = 'https://graffio2.firebaseio.com';

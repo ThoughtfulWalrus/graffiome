@@ -1,7 +1,7 @@
 'use strict';
 var userToken = null;
 
-var ref = new Firebase(FIREBASE_CONNECTION + '/web/data/sites/');
+var ref = new Firebase(FIREBASE_CONNECTION);
 
 var registeredSites = {}; //firebase event listener
 
@@ -19,9 +19,51 @@ var getCurrentUser = function() {
   return ref.getAuth() ? ref.getAuth().uid.replace(':','') : null;
 };
 
+var getCurrentUserGroups = function () {
+  var currentUser = getCurrentUser();
+  var currentUserGroupsArray = [];
+  var currentUserGroupsDbPath = ref.child('users').child(currentUser).child('groups');
+
+  currentUserGroupsDbPath.on("value", function(snapshot) {
+    var groups = snapshot.val();  
+    for (var group in groups) {
+      //console.log(groups[group].name);
+      var test = groups[group].name;
+      currentUserGroups.push(test);        
+    }
+    }, function (errorObject) {
+      console.log("The read failed: " + errorObject.code);
+  });
+
+  return currentUserGroupsArray;
+};
+var currentUserGroups = getCurrentUserGroups();
+
+
+var getActiveUserGroup = function () {
+
+  var activeGroup = {};
+  var currentUserGroupsDbPath = ref.child('users').child(getCurrentUser()).child('groups');
+
+  currentUserGroupsDbPath.on("value", function(snapshot) {
+    var groups = snapshot.val();  
+      for (var group in groups) {            
+        if (group === 'active') {
+          activeGroup['active'] = groups[group]
+          console.log(activeGroup);
+        }
+      }
+  }, function (errorObject) {
+      console.log("The read failed: " + errorObject.code);
+  });
+}
+
+getActiveUserGroup();
+
 var saveUserCanvas = function(site, data) {
   if (getCurrentUser()){
-    ref.child(site).child(getCurrentUser()).set(data);
+    ref.child('web/data/sites').child(site).child('users').child(getCurrentUser()).set(data);
+
     return true;
   } else {
     return false;
@@ -35,13 +77,18 @@ var registerSite = function(site) {
   }
   if (registeredSites[site].count <= 0) {
     registeredSites[site].count = 1;
-    registeredSites[site].listener = ref.child(site).on('value',
+
+    registeredSites[site].listener = ref.child('web/data/sites').child(site).child('users').on('value',
       function (snapshot) {
+      
         var FBData = snapshot.val();
         for (var user in FBData) {
+          
           broadcastData(site, user, FBData[user]);
         }
       });
+
+
   } else {
     registeredSites[site] += 1;
     ref.child(site).once('value', function (snapshot) {
@@ -60,7 +107,7 @@ var unregisterSite = function(site) {
   }
   if (registeredSites[site].count <= 0){
     registeredSites[site].count = 0;
-    ref.child(site).off('value', registeredSites[site].listner);
+    ref.child(site).off('value', registeredSites[site].listener);
   }
 };
 
