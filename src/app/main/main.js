@@ -153,12 +153,13 @@ angular.module('graffio.mainController', ['firebase', 'ngFx'])
     });
   };
 
-}).controller('groupController', function($scope, $firebaseArray){
+}).controller('groupController', function($scope, $firebaseArray, $firebaseObject){
   var ref = new Firebase(FIREBASE_CONNECTION + '/users');
   var user = ref.getAuth().uid.replace(':','');
 
   $scope.groups = null;
   $scope.newGroup = '';
+  $scope.user = '';
   $scope.groupsLoaded = false;
 
   $scope.addGroup = function(){
@@ -174,17 +175,31 @@ angular.module('graffio.mainController', ['firebase', 'ngFx'])
     }
   };
 
-  $scope.removeGroup = function() {
-    var indexToRemove = $scope.groups.indexOf(this.group)
+  $scope.removeGroup = function(group) {
+    if($scope.user.activeGroup === group.name){
+      $scope.user.activeGroup = '';
+    }
+
+    var indexToRemove = $scope.groups.indexOf(group)
     $scope.groups.$remove(indexToRemove);
   };
+
+  $scope.setActiveGroup = function(group) {
+      $scope.user.activeGroup = group.name;
+  };
+
 
   $firebaseArray(ref.child(user).child('groups')).$loaded()
     .then(function(list){
       $scope.groups = list;
       $scope.groupsLoaded = true;
     });
+  var obj = $firebaseObject(ref.child(user));
+
+  obj.$bindTo($scope, "user")
+    .then(function(){
+    });
 });
 
 
-//
+

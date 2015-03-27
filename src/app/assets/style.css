@@ -9,6 +9,10 @@
 }
 .removeBtn{
 }
+.removeBtn input{
+  width: 25%;
+}
+
 .drawBtn{
     border-radius: 10px;
     border-color: black;
