@@ -2,7 +2,31 @@
   width:300px;
   height:auto;
 }
-
+.groupName{
+    margin-top: 1px;
+    float: left;
+    width: 40%;
+}
+.removeBtn{
+}
+.drawBtn{
+    border-radius: 10px;
+    border-color: black;
+    background-color: white;
+    outline: none;
+    width: 35%;
+    margin-right: 3px;
+}
+.highlightBtn{
+    border-radius: 10px;
+    border-color: black;
+    background-color: white;
+    outline: none;
+    width: 35%;
+}
+.active{
+    background-color: yellow;
+}
 img {
   float:right;
 }
