@@ -33,7 +33,7 @@ var sendTabMessage = function(status, tabID) {
 };
 
 // Begin Angular Module
-angular.module('graffio.mainController', ['firebase'])
+angular.module('graffio.mainController', ['firebase', 'ngFx'])
 .controller('mainController', function($scope, $state) {
   var ref = new Firebase(FIREBASE_CONNECTION);
 
@@ -45,7 +45,7 @@ angular.module('graffio.mainController', ['firebase'])
 }).controller('onOffController', function($scope){ 
   // initialize text before we can query the current tab
   $scope.onOffButtonTxt = 'loading...';
-
+  $scope.highlightBtnTxt = 'loading...';
 
 
   // generic UI update function for the status of the app
@@ -80,9 +80,47 @@ angular.module('graffio.mainController', ['firebase'])
       }
     });
   };
+
+  $scope.getHighlighterStatus = function(){
+    chrome.tabs.query({currentWindow: true, active: true}, function(tabs){
+      var currentTabId = tabs[0].id;
+      // Figure out what the current state of the highlighter is
+      chrome.tabs.sendMessage(currentTabId, {getHighlighterStatus: true}, function(res) {
+        // I should get back highlighter from canvas here. 
+        // It will have toggled
+        $scope.$apply(function() {
+          if (res.status === true) {
+            $scope.highlightBtnTxt = 'On';  
+          } else {
+            $scope.highlightBtnTxt = 'Off';
+          }
+        });
+      });
+    });
+  };
+
+  $scope.toggleHighlighter = function() {
+    chrome.tabs.query({currentWindow: true, active: true}, function(tabs){
+      var currentTabId = tabs[0].id;
+      // Figure out what the current state of the highlighter is
+      chrome.tabs.sendMessage(currentTabId, {toggleHighlighterStatus: true}, function(res) {
+        // I should get back highlighter from canvas here. 
+        // It will have toggled
+        $scope.$apply(function() {
+          if (res.status === true) {
+            $scope.highlightBtnTxt = 'On';  
+          } else {
+            $scope.highlightBtnTxt = 'Off';
+          }
+        });
+      });
+    });
+  };
  
   console.log('initial get status called...');
   // Initial call to getStatus to figure out what status the page was in last.
+  $scope.getHighlighterStatus();
+
   getStatus(function(status) {
     setStatusUi(status);
     console.log('status set');
@@ -119,14 +157,21 @@ angular.module('graffio.mainController', ['firebase'])
   var ref = new Firebase(FIREBASE_CONNECTION + '/users');
   var user = ref.getAuth().uid.replace(':','');
 
-  $scope.groups = $firebaseArray(ref.child(user).child('groups'));
+  $scope.groups = null;
   $scope.newGroup = '';
+  $scope.groupsLoaded = false;
 
   $scope.addGroup = function(){
-    console.log($scope.groups);
-    $scope.groups.$add({
-          name: $scope.newGroup
-        });
+    // Try to find the index of the new group name to add
+    var isNewGroup = $scope.groups.map(function(group) {
+                          return group.name;
+                        }).indexOf($scope.newGroup);
+
+    // Only add the group if it is not empty and it doesnt already exist
+    if($scope.newGroup !== '' && isNewGroup === -1) {
+      $scope.groups.$add({name: $scope.newGroup});
+      $scope.newGroup = '';
+    }
   };
 
   $scope.removeGroup = function() {
@@ -134,7 +179,12 @@ angular.module('graffio.mainController', ['firebase'])
     $scope.groups.$remove(indexToRemove);
   };
 
-});;
+  $firebaseArray(ref.child(user).child('groups')).$loaded()
+    .then(function(list){
+      $scope.groups = list;
+      $scope.groupsLoaded = true;
+    });
+});
 
 
 //

@@ -10,6 +10,7 @@ var lineColor = 'red',
     lineWidth = 2;
 
 var toggle = 'off';
+var highlighter = false; 
 
 var tabUrl = CryptoJS.SHA1(document.URL).toString();
 
@@ -185,6 +186,15 @@ chrome.runtime.onMessage.addListener(
     // Initialize toggle status for popup button
     } else if ( request.getStatus === true ){
       sendResponse({status:toggle});
+    } else if ( request.getHighlighterStatus === true){
+      sendResponse({status:highlighter});
+    } else if ( request.toggleHighlighterStatus === true){
+      if(highlighter === true)
+        highlighter = false;
+      else
+        highlighter = true;
+      
+      sendResponse({status:highlighter});
     } else if (request.canvasData) { // new Canvas data
       onCanvasData(request.site, request.user, request.data);
     } else if (request.erase){
