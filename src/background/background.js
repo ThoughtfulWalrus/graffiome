@@ -27,6 +27,21 @@ var saveUserCanvas = function(site, data) {
   }
 };
 
+var reloadHighlights = function(site, callback) {
+  console.log('reloadHighlights from db to backgroud');
+  if (getCurrentUser()){
+    console.log('firebase: ', ref);
+    ref.child(site)
+      .child(getCurrentUser())
+      .child('highlights')
+      .on('value', function(snapshot){
+        callback({ranges: snapshot.val()});
+    });
+  } else {
+    return false;
+  }
+};
+
 var saveHighlights = function(site, data) {
   console.log('saveHighlights to db from backgroud');
   if (getCurrentUser()){
@@ -106,5 +121,8 @@ chrome.runtime.onMessage.addListener(function(request,sender,sendResponse) {
   } else if (request.action === 'saveUserHighlights'){
     console.log('from backgroundlistener');
     sendResponse({saveStatus: saveHighlights(request.site, request.data)});
+  } else if (request.action === 'reloadUserHighlights'){
+    // sendResponse({ranges: reloadHighlights(request.site)});
+    reloadHighlights(request.site, sendResponse);
   }
 });

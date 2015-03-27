@@ -22,26 +22,41 @@ Highlighter.addClassApplier(Aqua);
 Highlighter.addClassApplier(Yellow);
 
 var reloadHighlights = function(){
-  chrome.storage.local.get( function (storage) {
-    if (storage[tabUrl]){
-      ranges = storage[tabUrl];
-      Highlighter.deserialize(ranges);
+  chrome.runtime.sendMessage(
+    {action: 'reloadUserHighlights', site: tabUrl},
+    function(response) {
+      if (response.ranges) {
+        console.log('RANGE!!!');
+        Highlighter.deserialize(response.ranges);
+      } else {
+        console.log('failed to load highlights');
     }
   });
+
+
+  // chrome.storage.local.get( function (storage) {
+  //   if (storage[tabUrl]){
+  //     ranges = storage[tabUrl];
+  //     Highlighter.deserialize(ranges);
+  //   }
+  // });
 };
 
 
 var saveUserHighlights = function(ranges){
   console.log('from saveUserHighlights: ', ranges);
-  chrome.runtime.sendMessage(
-    {action: 'saveUserHighlights', site: tabUrl, data: ranges},
-    function(response) {
+  var cb =  function(response) {
       if (response.saveStatus) {
         console.log('saving user highlights');
       } else {
         console.log('failed to save highlights');
     }
-  });
+  };
+
+  var request = {action: 'saveUserHighlights', site: tabUrl, data: ranges};
+
+
+  chrome.runtime.sendMessage(request, cb);
 };
 
 // // Message Listener
