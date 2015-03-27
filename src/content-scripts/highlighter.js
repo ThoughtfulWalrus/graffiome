@@ -2,6 +2,7 @@
 
 var tabUrl = CryptoJS.SHA1(window.location.href).toString();
 var selection = window.getSelection();
+var highlighterOn = false;
 var ranges;
 
 var Color = 'Yellow';
@@ -42,6 +43,20 @@ var reloadHighlights = function(){
   // });
 };
 
+var setHighlighterListener = function(highlighterOn){
+  if( highlighterOn ){
+    $('body').mouseup( function() {
+      if ( selection.type === 'Range' ){
+        console.log(Highlighter);
+        Highlighter.highlightSelection(Color);
+        ranges = Highlighter.serialize();
+        saveUserHighlights(ranges);
+      }
+    });
+  } else {
+    $('body').off('mouseup');
+  }
+};
 
 var saveUserHighlights = function(ranges){
   console.log('from saveUserHighlights: ', ranges);
@@ -59,29 +74,42 @@ var saveUserHighlights = function(ranges){
   chrome.runtime.sendMessage(request, cb);
 };
 
-// // Message Listener
-// chrome.runtime.onMessage.addListener(
-//   function (request, sender, sendResponse) {
-//    if (request.color) {
-//     Color = request.color;
-//    }
-//    if (request.remove) {
-//     console.log('remove')
-//     Highlighter.removeAllHighlights();
-//     ranges = Highlighter.serialize();
-//     saveHighlights(ranges);
-//    }
-//   }
-// );
+// Message Listener
+chrome.runtime.onMessage.addListener(
+  function (request, sender, sendResponse) {
+    if ( request.getHighlighterStatus === true){
+      sendResponse({status:highlighterOn});
+    } else if ( request.toggleHighlighterStatus === true){
+      highlighterOn = !highlighterOn;
+      setHighlighterListener(highlighterOn);
+
+      sendResponse({status:highlighterOn});
+    }
+
+
+
+   // if (request.color) {
+   //  Color = request.color;
+   // }
+   // if (request.remove) {
+   //  console.log('remove')
+   //  Highlighter.removeAllHighlights();
+   //  ranges = Highlighter.serialize();
+   //  saveHighlights(ranges);
+   // }
+  }
+);
+
+
 
 $(function() {
   reloadHighlights();
-  $('body').mouseup( function() {
-    if ( selection.type === 'Range' ){
-      console.log(Highlighter);
-      Highlighter.highlightSelection(Color);
-      ranges = Highlighter.serialize();
-      saveUserHighlights(ranges);
-    }
-  });
+  // $('body').mouseup( function() {
+  //   if ( selection.type === 'Range' ){
+  //     console.log(Highlighter);
+  //     Highlighter.highlightSelection(Color);
+  //     ranges = Highlighter.serialize();
+  //     saveUserHighlights(ranges);
+  //   }
+  // });
 });
