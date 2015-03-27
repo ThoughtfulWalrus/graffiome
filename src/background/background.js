@@ -1,4 +1,5 @@
 'use strict';
+
 var userToken = null;
 var ref = new Firebase(FIREBASE_CONNECTION + '/web/data/sites/');
 var registeredSites = {}; //firebase event listener
@@ -19,7 +20,33 @@ var getCurrentUser = function() {
 
 var saveUserCanvas = function(site, data) {
   if (getCurrentUser()){
-    ref.child(site).child(getCurrentUser()).set(data);
+    ref.child(site).child(getCurrentUser()).child('canvas').set(data);
+    return true;
+  } else {
+    return false;
+  }
+};
+
+var reloadHighlights = function(site, callback) {
+  console.log('reloadHighlights from db to backgroud');
+  if (getCurrentUser()){
+    console.log('firebase: ', ref);
+    ref.child(site)
+      .child(getCurrentUser())
+      .child('highlights')
+      .on('value', function(snapshot){
+        callback({ranges: snapshot.val()});
+    });
+  } else {
+    return false;
+  }
+};
+
+var saveHighlights = function(site, data) {
+  console.log('saveHighlights to db from backgroud');
+  if (getCurrentUser()){
+    console.log('firebase: ', ref);
+    ref.child(site).child(getCurrentUser()).child('highlights').set(data);
     return true;
   } else {
     return false;
@@ -37,6 +64,7 @@ var registerSite = function(site) {
       function (snapshot) {
         var FBData = snapshot.val();
         for (var user in FBData) {
+          console.log(FBData[user]);
           broadcastData(site, user, FBData[user]);
         }
       });
@@ -90,5 +118,11 @@ chrome.runtime.onMessage.addListener(function(request,sender,sendResponse) {
     registerSite(request.site);
   } else if (request.action === 'stopSiteData') {
     unregisterSite(request.site);
+  } else if (request.action === 'saveUserHighlights'){
+    console.log('from backgroundlistener');
+    sendResponse({saveStatus: saveHighlights(request.site, request.data)});
+  } else if (request.action === 'reloadUserHighlights'){
+    // sendResponse({ranges: reloadHighlights(request.site)});
+    reloadHighlights(request.site, sendResponse);
   }
 });
