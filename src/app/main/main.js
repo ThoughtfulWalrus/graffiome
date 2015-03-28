@@ -153,38 +153,62 @@ angular.module('graffio.mainController', ['firebase', 'ngFx'])
     });
   };
 
-}).controller('groupController', function($scope, $firebaseArray){
+}).controller('groupController', function($scope, $firebaseArray, $firebaseObject){
   var ref = new Firebase(FIREBASE_CONNECTION + '/users');
   var user = ref.getAuth().uid.replace(':','');
 
+  var FBGroupArr = $firebaseArray(ref.child(user).child('groups'));
+  var FBUserObj = $firebaseObject(ref.child(user));
+
   $scope.groups = null;
   $scope.newGroup = '';
+  $scope.user = null;
   $scope.groupsLoaded = false;
 
   $scope.addGroup = function(){
     // Try to find the index of the new group name to add
-    var isNewGroup = $scope.groups.map(function(group) {
+    var isNewGroup = FBGroupArr.map(function(group) {
                           return group.name;
                         }).indexOf($scope.newGroup);
 
     // Only add the group if it is not empty and it doesnt already exist
     if($scope.newGroup !== '' && isNewGroup === -1) {
-      $scope.groups.$add({name: $scope.newGroup});
-      $scope.newGroup = '';
+      FBGroupArr.$add({name: $scope.newGroup}).then(function(){
+        $scope.newGroup = '';
+      });
     }
   };
 
-  $scope.removeGroup = function() {
-    var indexToRemove = $scope.groups.indexOf(this.group)
-    $scope.groups.$remove(indexToRemove);
+  $scope.removeGroup = function(group) {
+    // If the name of the active group is the same as teh group we are removing
+    // set the activeGroup to ''
+    if(FBUserObj.activeGroup === group.name){
+      FBUserObj.activeGroup = '';
+    }
+
+    // Save changes to firebase. 
+    FBUserObj.$save().then(function(ref){
+      // Once user is saved, remove the group from the group array. 
+      var indexToRemove = FBGroupArr.indexOf(group)
+      FBGroupArr.$remove(indexToRemove);
+    })
   };
 
-  $firebaseArray(ref.child(user).child('groups')).$loaded()
+  $scope.setActiveGroup = function(group) {
+      FBUserObj.activeGroup = group.name;
+      FBUserObj.$save();
+  };
+
+  // Load the firebase groups array and user FBUserObject
+  FBGroupArr.$loaded()
     .then(function(list){
       $scope.groups = list;
       $scope.groupsLoaded = true;
     });
+
+  // 3-way data bind to $scope.user
+  FBUserObj.$bindTo($scope, "user");
 });
 
 
-//
+

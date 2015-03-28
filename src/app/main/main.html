@@ -6,6 +6,13 @@
     <button class="highlightBtn" ng-click="toggleHighlighter()" ng-controller="onOffController" ng-class='{"active":highlightBtnTxt === "On"}'>Highlighting {{ highlightBtnTxt }}</button>
   </div>
   <div ng-controller="groupController">
+    <div>
+      Active Group:
+      <div class='fx-fade-left'>
+        {{user.activeGroup}}
+      </div>
+    </div>
+    
     <div>Groups:</div>
     <div ng-if='!groupsLoaded'>
       <span style='color: gray;'>Loading groups...</span>
@@ -15,7 +22,8 @@
         {{group.name}}
       </div>
       <div class="removeBtn">
-        <input type="submit" value='Remove' ng-click="removeGroup()"></input>
+        <input type="submit" value='Join' ng-click="setActiveGroup(group)"></input>
+        <input type="submit" value='Remove' ng-click="removeGroup(group)"></input>
       </div>
     </div>
     <form>
