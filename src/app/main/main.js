@@ -157,48 +157,57 @@ angular.module('graffio.mainController', ['firebase', 'ngFx'])
   var ref = new Firebase(FIREBASE_CONNECTION + '/users');
   var user = ref.getAuth().uid.replace(':','');
 
+  var FBGroupArr = $firebaseArray(ref.child(user).child('groups'));
+  var FBUserObj = $firebaseObject(ref.child(user));
+
   $scope.groups = null;
   $scope.newGroup = '';
-  $scope.user = '';
+  $scope.user = null;
   $scope.groupsLoaded = false;
 
   $scope.addGroup = function(){
     // Try to find the index of the new group name to add
-    var isNewGroup = $scope.groups.map(function(group) {
+    var isNewGroup = FBGroupArr.map(function(group) {
                           return group.name;
                         }).indexOf($scope.newGroup);
 
     // Only add the group if it is not empty and it doesnt already exist
     if($scope.newGroup !== '' && isNewGroup === -1) {
-      $scope.groups.$add({name: $scope.newGroup});
-      $scope.newGroup = '';
+      FBGroupArr.$add({name: $scope.newGroup}).then(function(){
+        $scope.newGroup = '';
+      });
     }
   };
 
   $scope.removeGroup = function(group) {
-    if($scope.user.activeGroup === group.name){
-      $scope.user.activeGroup = '';
+    // If the name of the active group is the same as teh group we are removing
+    // set the activeGroup to ''
+    if(FBUserObj.activeGroup === group.name){
+      FBUserObj.activeGroup = '';
     }
 
-    var indexToRemove = $scope.groups.indexOf(group)
-    $scope.groups.$remove(indexToRemove);
+    // Save changes to firebase. 
+    FBUserObj.$save().then(function(ref){
+      // Once user is saved, remove the group from the group array. 
+      var indexToRemove = FBGroupArr.indexOf(group)
+      FBGroupArr.$remove(indexToRemove);
+    })
   };
 
   $scope.setActiveGroup = function(group) {
-      $scope.user.activeGroup = group.name;
+      FBUserObj.activeGroup = group.name;
+      FBUserObj.$save();
   };
 
-
-  $firebaseArray(ref.child(user).child('groups')).$loaded()
+  // Load the firebase groups array and user FBUserObject
+  FBGroupArr.$loaded()
     .then(function(list){
       $scope.groups = list;
       $scope.groupsLoaded = true;
     });
-  var obj = $firebaseObject(ref.child(user));
 
-  obj.$bindTo($scope, "user")
-    .then(function(){
-    });
+  // 3-way data bind to $scope.user
+  FBUserObj.$bindTo($scope, "user");
 });
 
 
