@@ -19,27 +19,6 @@ var getCurrentUser = function() {
   return ref.getAuth() ? ref.getAuth().uid.replace(':','') : null;
 };
 
-var getCurrentUserGroups = function () {
-  var currentUser = getCurrentUser();
-  var currentUserGroupsArray = [];
-  var currentUserGroupsDbPath = ref.child('users').child(currentUser).child('groups');
-
-  currentUserGroupsDbPath.on("value", function(snapshot) {
-    var groups = snapshot.val();  
-    for (var group in groups) {
-      //console.log(groups[group].name);
-      var test = groups[group].name;
-      currentUserGroups.push(test);        
-    }
-    }, function (errorObject) {
-      console.log("The read failed: " + errorObject.code);
-  });
-
-  return currentUserGroupsArray;
-};
-var currentUserGroups = getCurrentUserGroups();
-
-
 var getActiveUserGroup = function () {
 
   var activeGroup = {};
@@ -56,9 +35,9 @@ var getActiveUserGroup = function () {
   }, function (errorObject) {
       console.log("The read failed: " + errorObject.code);
   });
-}
 
-getActiveUserGroup();
+  return activeGroup;
+}
 
 var saveUserCanvas = function(site, data) {
   if (getCurrentUser()){
@@ -72,6 +51,9 @@ var saveUserCanvas = function(site, data) {
 
 var registerSite = function(site) {
   console.log('registering site', site);
+
+  var currentUser = getCurrentUser();
+
   if (!registeredSites[site]){
     registeredSites[site] = {count: 0, listener: null};
   }
@@ -79,12 +61,20 @@ var registerSite = function(site) {
     registeredSites[site].count = 1;
 
     registeredSites[site].listener = ref.child('web/data/sites').child(site).child('users').on('value',
-      function (snapshot) {
-      
+      function (snapshot) {      
         var FBData = snapshot.val();
         for (var user in FBData) {
-          
-          broadcastData(site, user, FBData[user]);
+          if (currentUser.activeGroup !== undefined) {
+            if (user === currentUser.activeGroup) {
+              broadcastData(site, user, FBData[user]);
+              return;  
+            }
+          } else {
+            if (user === currentUser) {
+              broadcastData(site, user, FBData[user]);
+              return;             
+            }          
+          }
         }
       });
 
@@ -141,3 +131,5 @@ chrome.runtime.onMessage.addListener(function(request,sender,sendResponse) {
     unregisterSite(request.site);
   }
 });
+
+getActiveUserGroup();
